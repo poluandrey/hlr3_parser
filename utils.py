@@ -60,7 +60,7 @@ def push_file_to_server(server: str, port: int, source_file: str, destination_pa
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(server, port, username=default_settings.smssw_user)
+    ssh.connect(server, port, username=default_settings.smssw_user, disabled_algorithms=dict(pubkeys=["rsa-sha2-512", "rsa-sha2-256"]))
 
     scp = SCPClient(ssh.get_transport())
     scp.put(source_file, destination_path)
