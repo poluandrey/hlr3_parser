@@ -7,7 +7,7 @@ from scp import SCPClient
 from datetime import datetime
 from pathlib import Path
 
-from config import default_settings, belarus_settings
+from config import settings
 from logger_config import configure_logger
 from parsers.parser import AvailableCountry
 
@@ -29,7 +29,7 @@ def download_file(
 ) -> Path:
     # download file from FTP and return path to file
     logger.debug(f'Downloading {file_name}')
-    download_path = Path(default_settings.tmp_directory).joinpath(file_name)
+    download_path = Path(settings.tmp_directory).joinpath(file_name)
     with open(download_path, "wb") as f:
         ftp.retrbinary(f"RETR {file_name}", f.write)
     logger.debug(f'Finished downloading {file_name}')
@@ -42,7 +42,7 @@ def archive_file(
 ) -> None:
     logger.debug(f'Starting archiving {source_file}')
     archive_name = f'{file_prefix}-{datetime.now().strftime("%Y%m%d")}.zip'
-    archive_file = os.path.join(default_settings.archive_dir, archive_name)
+    archive_file = os.path.join(settings.archive_dir, archive_name)
     logger.debug(f'Archive file: {archive_file}')
     with zipfile.ZipFile(archive_file, 'w') as zip_file:
         zip_file.write(source_file, arcname=os.path.basename(source_file))
@@ -52,7 +52,9 @@ def archive_file(
 def get_country_prefix(country: AvailableCountry) -> str:
     match country:
         case country.Belarus:
-            return belarus_settings.file_prefix
+            return settings.belarus_settings.file_prefix
+        case country.Kazakhstan:
+            return settings.kazakhstan_settings.file_prefix
 
 
 def push_file_to_server(server: str, port: int, source_file: str, destination_path: str) -> None:
@@ -60,7 +62,7 @@ def push_file_to_server(server: str, port: int, source_file: str, destination_pa
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(server, port, username=default_settings.smssw_user, disabled_algorithms=dict(pubkeys=["rsa-sha2-512", "rsa-sha2-256"]))
+    ssh.connect(server, port, username=settings.smssw_user, disabled_algorithms=dict(pubkeys=["rsa-sha2-512", "rsa-sha2-256"]))
 
     scp = SCPClient(ssh.get_transport())
     scp.put(source_file, destination_path)

@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
@@ -13,15 +15,8 @@ class LoggerSettings(BaseSettings):
     log_format: str = Field(env="LOG_FORMAT", default="%(asctime)s - %(levelname)s - %(message)s")
 
 
-class Settings(BaseSettings):
-    tmp_directory: str = Field(validation_alias='TMP_DIRECTORY')
-    ftp_directory: str = Field(validation_alias='FTP_DIRECTORY')
-    hlr_directory: str = Field(validation_alias='HLR_DIRECTORY')
-    archive_dir: str = Field(validation_alias='ARCHIVE_DIRECTORY')
-    full_hlr_file: str = Field(validation_alias='FULL_HLR_FILE')
-    smssw_server: str = Field(validation_alias='SMSSW_SERVER')
-    smssw_user: str = Field(validation_alias='SMSSW_SERVER_USER')
-    smssw_full_hlr_file_path: str = Field(validation_alias='SMSSW_FULL_HLR_FILE_PATH')
+
+
 
 
 class GeorgiaMnpSettings(BaseSettings):
@@ -45,7 +40,21 @@ class BelarusMnpSettings(BaseSettings):
     file_prefix: str = 'belarus'
 
 
-default_settings = Settings()
+class Settings(BaseSettings):
+    tmp_directory: str = Field(validation_alias='TMP_DIRECTORY')
+    ftp_directory: str = Field(validation_alias='FTP_DIRECTORY')
+    hlr_directory: str = Field(validation_alias='HLR_DIRECTORY')
+    archive_dir: str = Field(validation_alias='ARCHIVE_DIRECTORY')
+    full_hlr_file: str = Field(validation_alias='FULL_HLR_FILE')
+    smssw_server: str = Field(validation_alias='SMSSW_SERVER')
+    smssw_user: str = Field(validation_alias='SMSSW_SERVER_USER')
+    smssw_full_hlr_file_path: str = Field(validation_alias='SMSSW_FULL_HLR_FILE_PATH')
+    georgia_settings: ClassVar = GeorgiaMnpSettings()
+    kazakhstan_settings: ClassVar = KazakhstanMnpSettings()
+    belarus_settings: ClassVar = BelarusMnpSettings()
+
+
+settings = Settings()
 log_settings = LoggerSettings()
 georgia_settings = GeorgiaMnpSettings()
 kazakhstan_settings = KazakhstanMnpSettings()

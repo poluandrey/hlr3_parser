@@ -14,7 +14,7 @@ logger = configure_logger(__name__)
 class AvailableCountry(Enum):
     # Georgia = auto()
     # Latvia = auto()
-    # Kazakhstan = auto()
+    Kazakhstan = auto()
     Belarus = auto()
 
 
@@ -137,8 +137,8 @@ def get_parser(country: AvailableCountry) -> MnpParser:
             #     return LatviaMnpParser()
             case country.Belarus:
                 return BelarusMnpParser()
-            # case country.Kazakhstan:
-            #     return KazakhstanMnpParser()
+            case country.Kazakhstan:
+                return KazakhstanMnpParser()
             # case country.Georgia:
             #     return GeorgiaMnpParser()
             case _:

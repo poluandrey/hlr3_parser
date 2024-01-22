@@ -1,6 +1,6 @@
 import os
 
-from config import default_settings
+from config import settings
 from error.errors import GetFileError
 from logger_config import configure_logger
 from file_handlers.file_handler import get_file_handler, join_all_files
@@ -43,12 +43,12 @@ def main() -> None:
             logger.info(f"finished handling country: {country.name}")
 
     logger.info("Archive full hlr file")
-    archive_file(default_settings.full_hlr_file, 'full_hlr')
+    archive_file(settings.full_hlr_file, 'full_hlr')
     join_all_files()
-    push_file_to_server(default_settings.smssw_server,
+    push_file_to_server(settings.smssw_server,
                         22,
-                        default_settings.full_hlr_file,
-                        default_settings.smssw_full_hlr_file_path)
+                        settings.full_hlr_file,
+                        settings.smssw_full_hlr_file_path)
 
 
 def main_test():
