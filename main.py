@@ -41,10 +41,10 @@ def main() -> None:
     logger.info("Archive full hlr file")
     archive_file(settings.full_hlr_file, 'full_hlr')
     join_all_files()
-    # push_file_to_server(settings.smssw_server,
-    #                     22,
-    #                     settings.full_hlr_file,
-    #                     settings.smssw_full_hlr_file_path)
+    push_file_to_server(settings.smssw_server,
+                        22,
+                        settings.full_hlr_file,
+                        settings.smssw_full_hlr_file_path)
 
 
 def main_test():
