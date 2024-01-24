@@ -55,6 +55,8 @@ def get_country_prefix(country: AvailableCountry) -> str:
             return settings.belarus_settings.file_prefix
         case country.Kazakhstan:
             return settings.kazakhstan_settings.file_prefix
+        case country.Latvia:
+            return settings.latvia_settings.file_prefix
 
 
 def push_file_to_server(server: str, port: int, source_file: str, destination_path: str) -> None:

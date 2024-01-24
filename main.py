@@ -21,15 +21,12 @@ def main() -> None:
             try:
                 raw_mnp_file = file_handler.get_file()
             except GetFileError:
-                logger.error('Could not get source mnp file')
-                break
-            except AttributeError:
-                logger.exception('Could not get source mnp file')
-                break
+                continue
+
             parse_result = parser.parse(raw_mnp_file)
             if len(parse_result.hlr_records) == 0 or len(parse_result.hlr3_records) == 0:
-                logger.error('one of parsed hlr format is empty')
-                break
+                logger.warning(f'Check parse result for {country.name}')
+                continue
 
             archive_file(raw_mnp_file, country.name)
             logger.debug(f'remove raw mnp file: {raw_mnp_file}')
@@ -38,17 +35,16 @@ def main() -> None:
             file_handler.save_parse_result(parse_result)
         except Exception as e:
             logger.exception(e, exc_info=True)
-            pass
         finally:
             logger.info(f"finished handling country: {country.name}")
 
     logger.info("Archive full hlr file")
     archive_file(settings.full_hlr_file, 'full_hlr')
     join_all_files()
-    push_file_to_server(settings.smssw_server,
-                        22,
-                        settings.full_hlr_file,
-                        settings.smssw_full_hlr_file_path)
+    # push_file_to_server(settings.smssw_server,
+    #                     22,
+    #                     settings.full_hlr_file,
+    #                     settings.smssw_full_hlr_file_path)
 
 
 def main_test():

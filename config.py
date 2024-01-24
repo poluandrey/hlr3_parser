@@ -10,13 +10,8 @@ load_dotenv()
 
 class LoggerSettings(BaseSettings):
     log_level: str = Field(env="LOG_LEVEL", default="INFO")
-    log_dir: str = Field(env="LOG_DIRECTORY", default="logs")
-    log_filename: str = Field(env="LOG_FILENAME")
+    log_file: str = Field(env="LOG_FILE", default="parser.log")
     log_format: str = Field(env="LOG_FORMAT", default="%(asctime)s - %(levelname)s - %(message)s")
-
-
-
-
 
 
 class GeorgiaMnpSettings(BaseSettings):
@@ -40,6 +35,11 @@ class BelarusMnpSettings(BaseSettings):
     file_prefix: str = 'belarus'
 
 
+class LatviaMnpSettings(BaseSettings):
+    source_directory: str = Field(validation_alias='LATVIA_SOURCE_DIRECTORY')
+    file_prefix: str = 'latvia'
+
+
 class Settings(BaseSettings):
     tmp_directory: str = Field(validation_alias='TMP_DIRECTORY')
     ftp_directory: str = Field(validation_alias='FTP_DIRECTORY')
@@ -52,10 +52,11 @@ class Settings(BaseSettings):
     georgia_settings: ClassVar = GeorgiaMnpSettings()
     kazakhstan_settings: ClassVar = KazakhstanMnpSettings()
     belarus_settings: ClassVar = BelarusMnpSettings()
+    latvia_settings: ClassVar = LatviaMnpSettings()
 
 
 settings = Settings()
 log_settings = LoggerSettings()
-georgia_settings = GeorgiaMnpSettings()
-kazakhstan_settings = KazakhstanMnpSettings()
-belarus_settings = BelarusMnpSettings()
+# georgia_settings = GeorgiaMnpSettings()
+# kazakhstan_settings = KazakhstanMnpSettings()
+# belarus_settings = BelarusMnpSettings()

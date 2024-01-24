@@ -13,7 +13,7 @@ logger = configure_logger(__name__)
 
 class AvailableCountry(Enum):
     # Georgia = auto()
-    # Latvia = auto()
+    Latvia = auto()
     Kazakhstan = auto()
     Belarus = auto()
 
@@ -64,7 +64,47 @@ class GeorgiaMnpParser:
 class LatviaMnpParser:
 
     def parse(self, in_file: str) -> ParseResult:
-        pass
+        logger.info("Starting parsing Latvia mnp file")
+        parse_result = ParseResult(hlr3_records=[], hlr_records=[])
+
+        rn2mcc: dict = {
+            'BC20': '247002',
+            'BC21': '247002',
+            'BC40': '247005',
+            'BC10': '247001',
+            'BC30': '247003',
+        }
+        # operator2mcc: dict = {
+        #     'Tele2': '247002',
+        #     'BITE Latvija': '247005',
+        #     'Latvijas Mobilais Telefons': '247001',
+        #     'Telekom Baltija': '247003',
+        # }
+
+        with open(in_file, 'r') as f:
+            reader = csv.DictReader(f, delimiter=' ', fieldnames=('dnis', 'mccmnc',))
+            for row in reader:
+                if row['mccmnc'] in rn2mcc.keys():
+                    parse_result.hlr3_records.append(
+                        {
+                            'dnis': f'371{row["dnis"]}',
+                            'mccmnc': rn2mcc[row['mccmnc']],
+                            'active_from': int(
+                                datetime.datetime.now().timestamp()),
+                            'ownerID': None,
+                            'providerResponseCode': None,
+                        }
+                    )
+                    parse_result.hlr_records.append(
+                        {
+                            'dnis': f'371{row["dnis"]}',
+                            'mccmnc': rn2mcc[row['mccmnc']]
+                        }
+                    )
+                else:
+                    # logger.warning(row)
+                    pass
+        return parse_result
 
 
 class BelarusMnpParser:
@@ -95,7 +135,9 @@ class BelarusMnpParser:
                     }
                 )
             except:
-                logger.exception(f"An error occurred while parsing record {mnc_cell.value, msisdn_cell.value, port_date_cell.value}", exc_info=True)
+                logger.exception(
+                    f"An error occurred while parsing record {mnc_cell.value, msisdn_cell.value, port_date_cell.value}",
+                    exc_info=True)
 
         return parse_result
 
@@ -133,8 +175,8 @@ class KazakhstanMnpParser:
 def get_parser(country: AvailableCountry) -> MnpParser:
     try:
         match country:
-            # case country.Latvia:
-            #     return LatviaMnpParser()
+            case country.Latvia:
+                return LatviaMnpParser()
             case country.Belarus:
                 return BelarusMnpParser()
             case country.Kazakhstan:

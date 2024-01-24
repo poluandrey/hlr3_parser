@@ -147,15 +147,57 @@ class BelarusFileHandler:
             csv_writer.writerows(parsed_result.hlr3_records)
 
 
+class LatviaFileHandler:
+
+    def get_file(self) -> str:
+        files = os.listdir(settings.latvia_settings.source_directory)
+        if len(files) == 0:
+            logger.warning('Nothing to parse')
+            raise GetFileError
+
+        if len(files) > 1:
+            logger.warning(f'to many files in source directory: {settings.belarus_settings.source_directory}')
+            raise GetFileError
+
+        source_file = os.path.join(settings.latvia_settings.source_directory, files[0])
+        logger.info(f'source mnp file: {source_file}')
+        return source_file
+
+    def save_parse_result(self, parsed_result: ParseResult) -> None:
+        logger.info('start save parse result')
+
+        hlr3_fields = ('dnis', 'mccmnc', 'active_from', 'ownerID', 'providerResponseCode')
+        ftp_fields = ('dnis', 'mccmnc')
+
+        ftp_file = os.path.join(settings.ftp_directory, settings.latvia_settings.file_prefix,
+                                f'{settings.latvia_settings.file_prefix}.csv')
+        logger.info(f'saving ftp file to: {ftp_file}')
+        with open(ftp_file, 'w') as ftp_f:
+            csv_writer = csv.DictWriter(ftp_f, fieldnames=ftp_fields, delimiter=';')
+            csv_writer.writerows(parsed_result.hlr_records)
+
+        hlr3_file = os.path.join(settings.hlr_directory, settings.latvia_settings.file_prefix,
+                                 f'{settings.latvia_settings.file_prefix}.csv')
+        logger.info(f'saving hlr3 file to: {hlr3_file}')
+        with open(hlr3_file, 'w') as hlr_f:
+            csv_writer = csv.DictWriter(hlr_f, fieldnames=hlr3_fields, delimiter=';')
+            csv_writer.writerows(parsed_result.hlr3_records)
+
+
 def join_all_files():
     logger.info('Start joining all files')
     full_file = settings.full_hlr_file
+    logger.info(f'full_file: {full_file}')
     hlr3_records = []
     for country in AvailableCountry:
         prefix = get_country_prefix(country)
         hlr3_file = os.path.join(settings.hlr_directory, prefix, f'{prefix}.csv')
-        with open(hlr3_file, 'r') as hlr3_file:
-            hlr3_records.extend(hlr3_file.readlines())
+        logger.info(f'join {hlr3_file}')
+        try:
+            with open(hlr3_file, 'r') as hlr3_file:
+                hlr3_records.extend(hlr3_file.readlines())
+        except FileNotFoundError:
+            logger.error(f'Could not find {hlr3_file}')
 
     with open(full_file, 'w') as full_hlr_file:
         full_hlr_file.writelines(hlr3_records)
@@ -170,5 +212,7 @@ def get_file_handler(country: AvailableCountry) -> FileHandler:
             return KazakhstanFileHandler()
         case country.Belarus:
             return BelarusFileHandler()
+        case country.Latvia:
+            return LatviaFileHandler()
         case _:
             pass

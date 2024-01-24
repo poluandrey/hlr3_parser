@@ -7,7 +7,7 @@ def configure_logger(name: str):
     logger = logging.getLogger(name)
     logger.setLevel(log_settings.log_level)
 
-    file_handler = logging.FileHandler(filename=log_settings.log_filename)
+    file_handler = logging.FileHandler(log_settings.log_file)
     stream_handler = logging.StreamHandler()
 
     file_handler.setLevel(log_settings.log_level)
