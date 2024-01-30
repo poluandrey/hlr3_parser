@@ -9,9 +9,9 @@ load_dotenv()
 
 
 class LoggerSettings(BaseSettings):
-    log_level: str = Field(env="LOG_LEVEL", default="INFO")
-    log_file: str = Field(env="LOG_FILE", default="parser.log")
-    log_format: str = Field(env="LOG_FORMAT", default="%(asctime)s - %(levelname)s - %(message)s")
+    log_level: str = Field(env='LOG_LEVEL', default='INFO')
+    log_file: str = Field(env='LOG_FILE', default='parser.log')
+    log_format: str = Field(env='LOG_FORMAT', default='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class GeorgiaMnpSettings(BaseSettings):
@@ -57,6 +57,3 @@ class Settings(BaseSettings):
 
 settings = Settings()
 log_settings = LoggerSettings()
-# georgia_settings = GeorgiaMnpSettings()
-# kazakhstan_settings = KazakhstanMnpSettings()
-# belarus_settings = BelarusMnpSettings()

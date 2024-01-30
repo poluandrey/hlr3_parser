@@ -5,17 +5,17 @@ from error.errors import GetFileError
 from logger_config import configure_logger
 from file_handlers.file_handler import get_file_handler, join_all_files
 from parsers.parser import get_parser, AvailableCountry
-from utils import archive_file, push_file_to_server
+from utils import archive_file, push_file_to_server, save_parse_result
 
 logger = configure_logger(__name__)
 
 
 def main() -> None:
-    logger.info("starting main application")
+    logger.info('starting main application')
     for country in AvailableCountry:
 
         try:
-            logger.info(f"starting handling country: {country.name}")
+            logger.info(f'starting handling country: {country.name}')
             parser = get_parser(country)
             file_handler = get_file_handler(country)
             try:
@@ -32,13 +32,13 @@ def main() -> None:
             logger.debug(f'remove raw mnp file: {raw_mnp_file}')
             os.remove(raw_mnp_file)
 
-            file_handler.save_parse_result(parse_result)
+            save_parse_result(parse_result, country)
         except Exception as e:
             logger.exception(e, exc_info=True)
         finally:
-            logger.info(f"finished handling country: {country.name}")
+            logger.info(f'finished handling country: {country.name}')
 
-    logger.info("Archive full hlr file")
+    logger.info('Archive full hlr file')
     archive_file(settings.full_hlr_file, 'full_hlr')
     join_all_files()
     push_file_to_server(settings.smssw_server,

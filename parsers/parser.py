@@ -33,7 +33,7 @@ class MnpParser(Protocol):
 class GeorgiaMnpParser:
 
     def parse(self, in_file: str) -> ParseResult:
-        logger.info(f"starting parsing Georgia mnp file")
+        logger.info('starting parsing Georgia mnp file')
         parse_result = ParseResult(hlr3_records=[], hlr_records=[])
         with open(in_file) as f:
             csv_reader = csv.reader(f, delimiter=';')
@@ -45,6 +45,7 @@ class GeorgiaMnpParser:
                         mccmnc = GEORGIA_OPERATOR_MAPPING[int(row[5])]
                     except KeyError:
                         logger.warning(f'cant get mccmnc from record {row}')
+
                     parse_result.hlr3_records.append(
                         {
                             'dnis': row[3],
@@ -52,19 +53,22 @@ class GeorgiaMnpParser:
                             'active_from': int(datetime.datetime.strptime(row[9], '%Y-%m-%d %H:%M:%S').timestamp()),
                             'ownerID': None,
                             'providerResponseCode': None,
-                        })
+                        },
+                    )
                     parse_result.hlr_records.append(
                         {
                             'dnis': row[3],
                             'mccmnc': mccmnc,
-                        })
+                        },
+                    )
+
             return parse_result
 
 
 class LatviaMnpParser:
 
     def parse(self, in_file: str) -> ParseResult:
-        logger.info("Starting parsing Latvia mnp file")
+        logger.info('Starting parsing Latvia mnp file')
         parse_result = ParseResult(hlr3_records=[], hlr_records=[])
 
         rn2mcc: dict = {
@@ -82,35 +86,34 @@ class LatviaMnpParser:
         # }
 
         with open(in_file, 'r') as f:
-            reader = csv.DictReader(f, delimiter=' ', fieldnames=('dnis', 'mccmnc',))
+            reader = csv.DictReader(f, delimiter=' ', fieldnames=('dnis', 'mccmnc'))
             for row in reader:
                 if row['mccmnc'] in rn2mcc.keys():
                     parse_result.hlr3_records.append(
                         {
                             'dnis': f'371{row["dnis"]}',
                             'mccmnc': rn2mcc[row['mccmnc']],
-                            'active_from': int(
-                                datetime.datetime.now().timestamp()),
+                            'active_from': int(datetime.datetime.now().timestamp()),
                             'ownerID': None,
                             'providerResponseCode': None,
-                        }
+                        },
                     )
                     parse_result.hlr_records.append(
                         {
                             'dnis': f'371{row["dnis"]}',
-                            'mccmnc': rn2mcc[row['mccmnc']]
-                        }
+                            'mccmnc': rn2mcc[row['mccmnc']],
+                        },
                     )
                 else:
-                    # logger.warning(row)
                     pass
+
         return parse_result
 
 
 class BelarusMnpParser:
 
     def parse(self, in_file: str) -> ParseResult:
-        logger.info(f"starting parsing Belarus mnp file")
+        logger.info('starting parsing Belarus mnp file')
         parse_result = ParseResult(hlr3_records=[], hlr_records=[])
         work_book = openpyxl.load_workbook(in_file)
         sheet = work_book['Sheet1']
@@ -121,7 +124,7 @@ class BelarusMnpParser:
                 {
                     'dnis': msisdn_cell.value,
                     'mccmnc': f'2570{mnc_cell.value}',
-                }
+                },
             )
             try:
                 parse_result.hlr3_records.append(
@@ -129,15 +132,17 @@ class BelarusMnpParser:
                         'dnis': msisdn_cell.value,
                         'mccmnc': f'2570{mnc_cell.value}',
                         'active_from': int(
-                            datetime.datetime.strptime(port_date_cell.value, '%d.%m.%Y %H:%M:%S').timestamp()),
+                            datetime.datetime.strptime(port_date_cell.value, '%d.%m.%Y %H:%M:%S').timestamp(),
+                        ),
                         'ownerID': None,
                         'providerResponseCode': None,
-                    }
+                    },
                 )
             except:
                 logger.exception(
-                    f"An error occurred while parsing record {mnc_cell.value, msisdn_cell.value, port_date_cell.value}",
-                    exc_info=True)
+                    f'An error occurred while parsing record {mnc_cell.value, msisdn_cell.value, port_date_cell.value}',
+                    exc_info=True,
+                )
 
         return parse_result
 
@@ -153,13 +158,14 @@ class KazakhstanMnpParser:
             csv_reader = csv.DictReader(
                 f,
                 delimiter=',',
-                fieldnames=('Number', 'OwnerId', 'MNC', 'Route', 'PortDate', 'RowCount')
+                fieldnames=('Number', 'OwnerId', 'MNC', 'Route', 'PortDate', 'RowCount'),
             )
             next(csv_reader)
             for row in csv_reader:
                 hlr_records = {
                     'dnis': row['Number'],
-                    'mccmnc': f"4010{row['MNC']}"}
+                    'mccmnc': f"4010{row['MNC']}",
+                }
                 hlr3_records = {
                     'dnis': row['Number'],
                     'mccmnc': f"4010{row['MNC']}",
@@ -169,6 +175,7 @@ class KazakhstanMnpParser:
                 }
                 parse_result.hlr_records.append(hlr_records)
                 parse_result.hlr3_records.append(hlr3_records)
+
         return parse_result
 
 

@@ -58,4 +58,4 @@ GEORGIA_OPERATOR_MAPPING = {10: 'Geocell ',
                             96: 'United Telecom',
                             97: 'Smkgroup',
                             98: 'Geosms',
-}
+                            }
